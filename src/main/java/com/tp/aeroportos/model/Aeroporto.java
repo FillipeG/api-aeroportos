@@ -13,10 +13,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data // Gera Getters, Setters, ToString automaticamente
-@NoArgsConstructor // Construtor vazio (obrigatório pro JPA)
-@AllArgsConstructor // Construtor completo
-@Entity // Define que esta classe é uma tabela no banco
+@Data 
+@NoArgsConstructor //construtor vazio 
+@AllArgsConstructor //construtor completo
+@Entity
 @Table(name = "aeroportos")
 public class Aeroporto {
 
