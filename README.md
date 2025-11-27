@@ -67,5 +67,10 @@ Executa o fluxo completo (Controller → DB):
 ./mvnw verify
 ```
 
+## 7. Adendo: Carga Automática de Dados
+
+Para atender ao requisito de popular o banco de dados com o arquivo airports.csv, decidi ir além da importação manual e pesquisar como automatizar esse processo via código.
+A Solução: Implementei uma classe que roda automaticamente assim que o sistema inicia (usando CommandLineRunner). Ela lê o arquivo CSV, processa as linhas e salva no banco de dados.
+
 
 
