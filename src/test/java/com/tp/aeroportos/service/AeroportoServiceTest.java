@@ -54,4 +54,26 @@ class AeroportoServiceTest {
         
         verify(aeroportoRepository, never()).save(any());
     }
+
+    @Test
+    @DisplayName("Deve lançar erro quando IATA não tiver 3 letras")
+    void deveLancarErroIataTamanhoInvalido() {
+        //IATA com 4 letras
+        Aeroporto aeroporto = new Aeroporto(null, "Teste", "ABCD", "SP", "BR", 0.0, 0.0, 0.0);
+        
+        assertThrows(IllegalArgumentException.class, () -> aeroportoService.salvar(aeroporto));
+        
+        verify(aeroportoRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve lançar erro quando altitude for negativa")
+    void deveLancarErroAltitudeNegativa() {
+        //altitude negativa (-10.0)
+        Aeroporto aeroporto = new Aeroporto(null, "Teste", "TST", "SP", "BR", 0.0, 0.0, -10.0);
+        
+        assertThrows(IllegalArgumentException.class, () -> aeroportoService.salvar(aeroporto));
+        
+        verify(aeroportoRepository, never()).save(any());
+    }
 }

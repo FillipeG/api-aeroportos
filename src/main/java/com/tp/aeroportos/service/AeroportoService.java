@@ -11,7 +11,6 @@ import java.util.Optional;
 @Service
 public class AeroportoService {
 
-    // injeção de dependência do repository
     private final AeroportoRepository aeroportoRepository;
 
     public AeroportoService(AeroportoRepository aeroportoRepository) {
@@ -28,20 +27,29 @@ public class AeroportoService {
 
     @Transactional
     public Aeroporto salvar(Aeroporto aeroporto) {
-        //nao permitir duplicidade de codigo IATA
+        // 1. Validação de IATA: Deve ter exatamente 3 letras
+        if (aeroporto.getIata() == null || aeroporto.getIata().length() != 3) {
+             throw new IllegalArgumentException("O código IATA deve ter exatamente 3 letras.");
+        }
+
+        // 2. Validação de Altitude: Não pode ser negativa
+        if (aeroporto.getAltitude() != null && aeroporto.getAltitude() < 0) {
+             throw new IllegalArgumentException("A altitude não pode ser negativa.");
+        }
+
+        // 3. Validação de Duplicidade
         if (aeroportoRepository.findByIata(aeroporto.getIata()).isPresent()) {
             throw new IllegalArgumentException("Já existe um aeroporto cadastrado com o código IATA: " + aeroporto.getIata());
         }
+
         return aeroportoRepository.save(aeroporto);
     }
 
     @Transactional
     public Aeroporto atualizar(String iata, Aeroporto dadosAtualizados) {
-        //so atualiza se o aeroporto existir
         Aeroporto aeroportoExistente = aeroportoRepository.findByIata(iata)
                 .orElseThrow(() -> new IllegalArgumentException("Aeroporto não encontrado"));
 
-        
         aeroportoExistente.setNome(dadosAtualizados.getNome());
         aeroportoExistente.setCidade(dadosAtualizados.getCidade());
         aeroportoExistente.setCodigoPais(dadosAtualizados.getCodigoPais());
