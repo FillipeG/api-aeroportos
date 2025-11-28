@@ -76,4 +76,15 @@ class AeroportoServiceTest {
         
         verify(aeroportoRepository, never()).save(any());
     }
+
+    @Test
+    @DisplayName("Deve lançar erro ao tentar atualizar aeroporto inexistente")
+    void deveLancarErroAtualizarNaoEncontrado() {
+        //tenta atualizar o IATA que não existe no banco
+        Aeroporto atualizacao = new Aeroporto(null, "Novo Nome", "XXX", "Cidade", "BR", 0.0, 0.0, 0.0);
+        
+        when(aeroportoRepository.findByIata("XXX")).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> aeroportoService.atualizar("XXX", atualizacao));
+    }
 }
