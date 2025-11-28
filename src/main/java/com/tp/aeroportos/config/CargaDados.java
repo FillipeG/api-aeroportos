@@ -22,7 +22,7 @@ public class CargaDados implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (aeroportoRepository.count() > 0) {
-            System.out.println("O banco de dados já contém dados. Carga ignorada.");
+            System.out.println("O banco de dados ja contem dados. Carga ignorada.");
             return;
         }
 
@@ -32,8 +32,7 @@ public class CargaDados implements CommandLineRunner {
              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 
             String linha;
-            boolean primeiraLinha = true;
-
+            
             while ((linha = reader.readLine()) != null) {
                 String[] dados = linha.split(";");
 
@@ -41,40 +40,28 @@ public class CargaDados implements CommandLineRunner {
                     try {
                         Aeroporto aeroporto = new Aeroporto();
                         
-                        // [1]=Nome
                         String nome = limparTexto(dados[1]);
-                        if (nome.isEmpty()) nome = "Aeroporto sem nome";
-                        aeroporto.setNome(nome);
+                        aeroporto.setNome(nome.isEmpty() ? "Aeroporto Sem Nome" : nome);
 
-                        // [2]=Cidade (Tratamento para evitar erro de validação)
                         String cidade = limparTexto(dados[2]);
-                        if (cidade.isEmpty()) cidade = "Localização Desconhecida"; 
-                        aeroporto.setCidade(cidade);
+                        aeroporto.setCidade(cidade.isEmpty() ? "Desconhecida" : cidade);
                         
-                        // [3]=País (Tratamento para pegar sigla de 2 letras)
                         String nomePais = limparTexto(dados[3]);
-                        if (nomePais != null && nomePais.length() >= 2) {
-                            aeroporto.setCodigoPais(nomePais.substring(0, 2).toUpperCase());
-                        } else {
-                            aeroporto.setCodigoPais("XX");
-                        }
+                        aeroporto.setCodigoPais(Aeroporto.obterIsoPais(nomePais));
 
-                        // [4]=IATA
                         String iata = limparTexto(dados[4]);
                         if (iata == null || iata.length() != 3 || iata.equals("\\N")) {
-                            continue; // IATA é chave única e obrigatória, se não tiver, pula mesmo.
+                            continue; 
                         }
                         aeroporto.setIata(iata);
 
-                        // [6,7,8]=Lat, Lon, Alt
                         aeroporto.setLatitude(Double.parseDouble(dados[6]));
                         aeroporto.setLongitude(Double.parseDouble(dados[7]));
                         aeroporto.setAltitude(Double.parseDouble(dados[8]));
 
                         aeroportoRepository.save(aeroporto);
                     } catch (Exception e) {
-                        // Log simplificado para não sujar o terminal
-                        // System.out.println("Linha ignorada: " + linha);
+                        System.out.println("Erro ao processar linha: " + linha);
                     }
                 }
             }
