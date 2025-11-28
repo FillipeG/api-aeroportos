@@ -64,4 +64,20 @@ class AeroportoControllerIT {
                 .andExpect(status().isOk()) 
                 .andExpect(jsonPath("$.nome").value("Aeroporto Busca"));
     }
+
+    @Test
+    @DisplayName("PUT /api/v1/aeroportos/{iata} - Deve atualizar e retornar 200")
+    void deveAtualizarAeroporto() throws Exception {
+        //cria um aeroporto no banco
+        aeroportoRepository.save(new Aeroporto(null, "TESTE", "UPD", "Cidade", "BR", 0.0, 0.0, 0.0));
+
+        Aeroporto atualizado = new Aeroporto(null, "TESTENOVO", "UPD", "CIDADETESTE", "BR", 1.0, 1.0, 10.0);
+
+        //faz o PUT enviando o JSON novo
+        mockMvc.perform(put("/api/v1/aeroportos/{iata}", "UPD")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(atualizado)))
+                .andExpect(status().isOk()) 
+                .andExpect(jsonPath("$.nome").value("TESTENOVO")); 
+    }
 }
