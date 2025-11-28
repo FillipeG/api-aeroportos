@@ -9,7 +9,7 @@ A API segue o padrão arquitetural REST e expõe endpoints para manipulação de
 * **Linguagem:** Java 17+
 * **Framework:** Spring Boot 3.x
 * **Gerenciamento de Dependências:** Maven
-* **Banco de Dados:** H2 Database (Testes/Dev)
+* **Banco de Dados:** MySQL (Com ambientes isolados para Produção e Testes)
 * **Testes:** JUnit 5, Mockito
 * **Plugins Maven:**
     * `maven-surefire-plugin`: Execução de testes de unidade.
