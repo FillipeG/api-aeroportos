@@ -16,4 +16,14 @@ class AeroportoTest {
 
         assertEquals(esperadoMetros, resultado, 0.01);
     }
+
+    @Test
+    @DisplayName("Deve retornar código ISO correto para o país")
+    void deveRetornarCodigoIsoCorreto() {
+        String isoBrasil = Aeroporto.obterIsoPais("Brazil");
+        assertEquals("BR", isoBrasil);
+
+        String isoEua = Aeroporto.obterIsoPais("United States");
+        assertEquals("US", isoEua);
+    }
 }

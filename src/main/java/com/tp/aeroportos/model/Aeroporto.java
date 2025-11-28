@@ -55,4 +55,14 @@ public class Aeroporto {
     public static double converterPesParaMetros(double pes) {
         return pes * 0.3048;
     }
+
+    public static String obterIsoPais(String nomePais) {
+        if (nomePais == null) return "XX";
+        
+        return switch (nomePais) {
+            case "Brazil", "Brasil" -> "BR";
+            case "United States", "USA", "Estados Unidos" -> "US";
+            default -> "XX"; //para desconhecido
+        };
+    }
 }
