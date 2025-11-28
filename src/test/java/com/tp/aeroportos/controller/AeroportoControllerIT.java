@@ -2,6 +2,7 @@ package com.tp.aeroportos.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tp.aeroportos.model.Aeroporto;
 import com.tp.aeroportos.repository.AeroportoRepository;
@@ -79,5 +80,19 @@ class AeroportoControllerIT {
                 .content(objectMapper.writeValueAsString(atualizado)))
                 .andExpect(status().isOk()) 
                 .andExpect(jsonPath("$.nome").value("TESTENOVO")); 
+    }
+
+    @Test
+    @DisplayName("DELETE /api/v1/aeroportos/{iata} - Deve excluir (204) e depois não encontrar (404)")
+    void deveDeletarAeroporto() throws Exception {
+        aeroportoRepository.save(new Aeroporto(null, "Aeroporto Para Deletar", "DEL", "Cidade", "BR", 0.0, 0.0, 0.0));
+
+        //deleta e espera erro
+        mockMvc.perform(delete("/api/v1/aeroportos/{iata}", "DEL"))
+                .andExpect(status().isNoContent());
+
+        //tenta buscar o mesmo e espera erro
+        mockMvc.perform(get("/api/v1/aeroportos/{iata}", "DEL"))
+                .andExpect(status().isNotFound());
     }
 }
