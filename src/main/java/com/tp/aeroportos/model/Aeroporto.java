@@ -51,4 +51,8 @@ public class Aeroporto {
 
     @NotNull(message = "A altitude é obrigatória")
     private Double altitude;
+
+    public static double converterPesParaMetros(double pes) {
+        return pes * 0.3048;
+    }
 }
