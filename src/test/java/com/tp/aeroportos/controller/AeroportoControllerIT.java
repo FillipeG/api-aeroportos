@@ -1,5 +1,7 @@
 package com.tp.aeroportos.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tp.aeroportos.model.Aeroporto;
 import com.tp.aeroportos.repository.AeroportoRepository;
@@ -49,5 +51,17 @@ class AeroportoControllerIT {
                 .andExpect(status().isCreated()) 
                 .andExpect(jsonPath("$.iata").value("TST")) 
                 .andExpect(jsonPath("$.id").exists()); 
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/aeroportos/{iata} - Deve retornar aeroporto e Status 200")
+    void deveBuscarAeroporto() throws Exception {
+        //salva um aeroporto no banco 
+        aeroportoRepository.save(new Aeroporto(null, "Aeroporto Busca", "BSC", "Cidade", "BR", 0.0, 0.0, 0.0));
+
+        //faz o GET e espera JSON 
+        mockMvc.perform(get("/api/v1/aeroportos/{iata}", "BSC"))
+                .andExpect(status().isOk()) 
+                .andExpect(jsonPath("$.nome").value("Aeroporto Busca"));
     }
 }
