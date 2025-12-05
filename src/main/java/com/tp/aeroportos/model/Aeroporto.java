@@ -14,8 +14,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data 
-@NoArgsConstructor //construtor vazio 
-@AllArgsConstructor //construtor completo
+@NoArgsConstructor 
+@AllArgsConstructor 
 @Entity
 @Table(name = "aeroportos")
 public class Aeroporto {
@@ -56,13 +56,61 @@ public class Aeroporto {
         return pes * 0.3048;
     }
 
+    
     public static String obterIsoPais(String nomePais) {
-        if (nomePais == null) return "XX";
+        if (nomePais == null || nomePais.trim().isEmpty()) {
+            return "XX";
+        }
         
-        return switch (nomePais) {
+        String nomeLimpo = nomePais.trim();
+
+        return switch (nomeLimpo) {
+            
             case "Brazil", "Brasil" -> "BR";
             case "United States", "USA", "Estados Unidos" -> "US";
-            default -> "XX"; //para desconhecido
+            case "Canada" -> "CA";
+            case "Mexico" -> "MX";
+            case "Argentina" -> "AR";
+            case "Chile" -> "CL";
+            case "Colombia" -> "CO";
+            case "Peru" -> "PE";
+            
+            
+            case "Germany", "Alemanha" -> "DE";
+            case "United Kingdom", "Reino Unido", "Great Britain" -> "GB";
+            case "France", "França" -> "FR";
+            case "Italy", "Itália" -> "IT";
+            case "Spain", "Espanha" -> "ES";
+            case "Portugal" -> "PT";
+            case "Netherlands", "Holanda" -> "NL";
+            case "Belgium", "Bélgica" -> "BE";
+            case "Switzerland", "Suíça" -> "CH";
+            case "Sweden", "Suécia" -> "SE";
+            case "Norway", "Noruega" -> "NO";
+            case "Russia", "Rússia" -> "RU";
+            
+            
+            case "Japan", "Japão" -> "JP";
+            case "China" -> "CN";
+            case "India", "Índia" -> "IN";
+            case "South Korea", "Coreia do Sul" -> "KR";
+            case "Australia", "Austrália" -> "AU";
+            case "New Zealand", "Nova Zelândia" -> "NZ";
+            case "Philippines", "Filipinas" -> "PH";
+            
+            
+            case "South Africa", "África do Sul" -> "ZA";
+            case "Saudi Arabia", "Arábia Saudita" -> "SA";
+            case "Turkey", "Turquia" -> "TR";
+            case "Israel" -> "IL";
+            
+            
+            default -> {
+                if (nomeLimpo.length() >= 2) {
+                    yield nomeLimpo.substring(0, 2).toUpperCase();
+                }
+                yield "XX";
+            }
         };
     }
 }

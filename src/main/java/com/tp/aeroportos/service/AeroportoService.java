@@ -1,5 +1,6 @@
 package com.tp.aeroportos.service;
 
+import com.tp.aeroportos.exception.AeroportoNaoEncontradoException;
 import com.tp.aeroportos.model.Aeroporto;
 import com.tp.aeroportos.repository.AeroportoRepository;
 import org.springframework.stereotype.Service;
@@ -27,17 +28,8 @@ public class AeroportoService {
 
     @Transactional
     public Aeroporto salvar(Aeroporto aeroporto) {
-        // 1. Validação de IATA: Deve ter exatamente 3 letras
-        if (aeroporto.getIata() == null || aeroporto.getIata().length() != 3) {
-             throw new IllegalArgumentException("O código IATA deve ter exatamente 3 letras.");
-        }
+        validarDados(aeroporto); 
 
-        // 2. Validação de Altitude: Não pode ser negativa
-        if (aeroporto.getAltitude() != null && aeroporto.getAltitude() < 0) {
-             throw new IllegalArgumentException("A altitude não pode ser negativa.");
-        }
-
-        // 3. Validação de Duplicidade
         if (aeroportoRepository.findByIata(aeroporto.getIata()).isPresent()) {
             throw new IllegalArgumentException("Já existe um aeroporto cadastrado com o código IATA: " + aeroporto.getIata());
         }
@@ -48,7 +40,9 @@ public class AeroportoService {
     @Transactional
     public Aeroporto atualizar(String iata, Aeroporto dadosAtualizados) {
         Aeroporto aeroportoExistente = aeroportoRepository.findByIata(iata)
-                .orElseThrow(() -> new IllegalArgumentException("Aeroporto não encontrado"));
+                .orElseThrow(() -> new AeroportoNaoEncontradoException(iata)); 
+
+        validarDados(dadosAtualizados); 
 
         aeroportoExistente.setNome(dadosAtualizados.getNome());
         aeroportoExistente.setCidade(dadosAtualizados.getCidade());
@@ -63,7 +57,17 @@ public class AeroportoService {
     @Transactional
     public void deletar(String iata) {
         Aeroporto aeroporto = aeroportoRepository.findByIata(iata)
-                .orElseThrow(() -> new IllegalArgumentException("Aeroporto não encontrado"));
+                .orElseThrow(() -> new AeroportoNaoEncontradoException(iata)); 
         aeroportoRepository.delete(aeroporto);
+    }
+
+    private void validarDados(Aeroporto aeroporto) {
+        if (aeroporto.getIata() == null || aeroporto.getIata().length() != 3) {
+            throw new IllegalArgumentException("O código IATA deve ter exatamente 3 letras.");
+        }
+        
+        if (aeroporto.getAltitude() != null && aeroporto.getAltitude() < 0) {
+            throw new IllegalArgumentException("A altitude não pode ser negativa.");
+        }
     }
 }

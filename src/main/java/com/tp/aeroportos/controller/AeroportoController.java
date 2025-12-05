@@ -1,5 +1,6 @@
 package com.tp.aeroportos.controller;
 
+import com.tp.aeroportos.exception.AeroportoNaoEncontradoException;
 import com.tp.aeroportos.model.Aeroporto;
 import com.tp.aeroportos.service.AeroportoService;
 import jakarta.validation.Valid;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/aeroportos") //define o caminho 
+@RequestMapping("/api/v1/aeroportos")
 public class AeroportoController {
 
     private final AeroportoService aeroportoService;
@@ -19,13 +20,11 @@ public class AeroportoController {
         this.aeroportoService = aeroportoService;
     }
 
-    //obter todos
     @GetMapping
     public ResponseEntity<List<Aeroporto>> listarTodos() {
         return ResponseEntity.ok(aeroportoService.listarTodos());
     }
 
-    //obter por IATA
     @GetMapping("/{iata}")
     public ResponseEntity<Aeroporto> buscarPorIata(@PathVariable String iata) {
         return aeroportoService.buscarPorIata(iata)
@@ -33,30 +32,33 @@ public class AeroportoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    //adicionar novo
     @PostMapping
-    public ResponseEntity<Aeroporto> cadastrar(@Valid @RequestBody Aeroporto aeroporto) {
-        Aeroporto novoAeroporto = aeroportoService.salvar(aeroporto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoAeroporto);
-    }
-
-    //atualizar existente
-    @PutMapping("/{iata}")
-    public ResponseEntity<Aeroporto> atualizar(@PathVariable String iata, @Valid @RequestBody Aeroporto aeroporto) {
+    public ResponseEntity<?> cadastrar(@Valid @RequestBody Aeroporto aeroporto) {
         try {
-            return ResponseEntity.ok(aeroportoService.atualizar(iata, aeroporto));
+            Aeroporto novoAeroporto = aeroportoService.salvar(aeroporto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(novoAeroporto);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    //excluir
+    @PutMapping("/{iata}")
+    public ResponseEntity<?> atualizar(@PathVariable String iata, @Valid @RequestBody Aeroporto aeroporto) {
+        try {
+            return ResponseEntity.ok(aeroportoService.atualizar(iata, aeroporto));
+        } catch (AeroportoNaoEncontradoException e) {
+            return ResponseEntity.notFound().build(); 
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage()); 
+        }
+    }
+
     @DeleteMapping("/{iata}")
     public ResponseEntity<Void> deletar(@PathVariable String iata) {
         try {
             aeroportoService.deletar(iata);
             return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
+        } catch (AeroportoNaoEncontradoException e) {
             return ResponseEntity.notFound().build();
         }
     }
